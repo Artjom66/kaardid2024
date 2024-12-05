@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html>
- <head>
-    <title>Pildi leht</title>
-    <script>
+    <head>
+      <title>Pildi leht</title>
+      <script>
         function vajutus(){
-            vastus.innerText=valik1.value;
+           vastus.innerText=valik1.value;
+           let aadress="https://script.google.com/macros/s/AKfycbyLcdncrHZCHGYF79Miowj_iLD6BIx7QAPq8v3xUSxdyKHAMwcmtnBW5vIHdKii_lJQFg/exec?hinnang="+valik1.value;
+           fetch(aadress).then(d => d.text()).then(function(t){vastus.innerText=t;})
         }
-    </script>
+      </script>
     </head>
     <body>
-        <h1>Pildi uudistamise leht</h1>
-        <img src="beethoven.png" /><br />
-        <select id="valik1">
-            <option>meeldib</option>
-            <option>armastan</option>
-            <option>ei meeldib</option>
-        </select>
-        <input type="button" onclick="vajutus()" value="saada" />
-        <div id="vastus">vastuse koht</div>
+       <h1>Pildi uudistamise leht</h1>
+       <img src="beethoven.png" /><br />
+       <select id="valik1">
+        <option>meeldib</option>
+        <option>armastan</option>
+        <option>ei meeldi</option>
+       </select>
+       <input type="button" onclick="vajutus()" value="saada" />
+       <div id="vastus">vastuse koht</div>
     </body>
-    </html>
+</html>
