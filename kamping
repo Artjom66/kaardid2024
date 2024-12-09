@@ -1,0 +1,116 @@
+
+<html>
+ <head>
+   <title>Kämping</title>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" />
+   <style>
+     body { padding: 0; margin: 0; }
+     html, body { height: 100%; width: 100%; }
+        #kaardikiht {float:bottom; width:1200px; height:800px;}
+   </style>
+   <script>
+     let kaart, userMarker;
+     const campingMarkers = [];
+     const kämpinguKohad = [
+       //Kämpingu kohtade koordinaadid
+       { koht: 'Männisalu', getLatLng: [59.42400465321339, 27.515447327201272] },
+	   { koht: 'Mereoja', getLatLng: [59.43448153202752, 26.95514465446789] },
+	   { koht: 'Valaste puhkeküla', getLatLng: [59.44127137409746, 27.336335003745113] },
+	   { koht: 'Aare telkla', getLatLng: [59.33287554116753, 27.380280311410473] },
+	   { koht: 'NiinSaare', getLatLng: [59.24661134345069, 27.535462169887776] },
+	   { koht: 'Vaikla puhkekeskus', getLatLng: [59.06848523151296, 27.370667266142664] },
+	   { koht: 'Karjamaa telkimisala', getLatLng: [59.01055347317566, 27.492890153086957] },
+	   { koht: 'Kauksi telklaager', getLatLng: [58.99287192464549, 27.242951215740202] },
+	   { koht: 'Raadna puhkekeskus', getLatLng: [58.97376564922948, 27.14132769251946] },
+	   { koht: 'Pereaiand "Elulõng"', getLatLng: [58.95039914200952, 27.043824041136936] },
+	   { koht: 'Tammispää Camping', getLatLng: [58.92122056754865, 27.011775903529486] },
+	   { koht: 'Päevatalu', getLatLng: [58.88123234840502, 26.95744512727883] },
+	   { koht: 'Kadrina mõisa Kämpingud', getLatLng: [58.704056200481276, 27.087907759410374] },
+	   { koht: 'Vaino turismitalu', getLatLng: [58.60475684193612, 27.20875735549013] },
+	   { koht: 'Kolkja Puhkeküla', getLatLng: [58.55540967018481, 27.20532309753465] },
+	   { koht: 'Kiviranna Holiday Home', getLatLng: [58.36643607072756, 26.15135986370175] },
+	   { koht: 'Võistre puhkekeskus', getLatLng: [58.43695199564812, 25.585564027510195] },
+	   { koht: 'Valma holiday camp', getLatLng: [58.36211418498732, 25.95909914266578] },
+	   { koht: 'Kangro talu', getLatLng: [58.03001147521548, 26.435114223564067] },
+	   { koht: 'Miiaste glamping', getLatLng: [58.08813403809963, 27.17394470868799] },
+	   { koht: 'Orupõhja', getLatLng: [58.05763148495711, 26.940485261715747] },
+	   { koht: 'Reisikoda kämping', getLatLng: [58.05181851972056, 27.05309511260824] },
+	   { koht: 'Pinnamäe puhketalu', getLatLng: [58.01255625940829, 27.184931035604333] },
+	   { koht: 'Vällamäe metsamaja', getLatLng: [57.730646203438745, 27.066828021253666] },
+	   { koht: 'Hedo talu', getLatLng: [57.74384140145546, 26.70977239647259] },
+	   { koht: 'Ööbikuoru puhkekeskus', getLatLng: [57.73357888569002, 26.929498934799405] },
+	   { koht: 'Vanapagana metsamaja', getLatLng: [58.626769936308165, 25.36671771212783] },
+	   { koht: 'Sahhalini', getLatLng: [58.45188612998123, 25.023394995992177] },
+	   { koht: 'Watercamp Estonia', getLatLng: [58.49210055591596, 24.94649070757779] },
+	   { koht: 'Camping Esplanaadi', getLatLng: [58.37876854372987, 24.49745169943342] },
+	   { koht: 'Solar Caravan Park', getLatLng: [58.419066542872876, 24.362869194708242] },
+	   { koht: 'Paunküla puhkekeskus', getLatLng: [59.10980649773278, 25.37910455533568] },
+	   { koht: 'Marika Puhkeküla', getLatLng: [59.21250000032375, 23.678283608310934] },
+	   { koht: 'Lahemaa Camping', getLatLng: [59.59656214301339, 25.713978712040266] },
+	   { koht: 'Lahemaa Glamping', getLatLng: [59.642919362319724, 25.74710948468824] },
+	   { koht: 'Pirita Harbour Camping', getLatLng: [59.46337767000385, 24.824257871122395] },
+	   { koht: 'Bubble House glamping tent with sauna', getLatLng: [59.158595752407074, 25.277813392278873] },
+	   { koht: 'Käbala kämping', getLatLng: [59.064124761705585, 26.313274704144] },
+	   { koht: 'Lõunaranna Harbour Accommodation', getLatLng: [58.539809155247, 23.315893310896136] },
+	   { koht: 'Tõhela Järve Puhkeküla', getLatLng: [58.41631487956487, 24.013525070083784] },
+	   { koht: 'Aki kämping', getLatLng: [58.60568621861292, 23.225256113836327] },
+	   { koht: 'Viinaköök - Camping', getLatLng: [58.97854124911743, 22.467199556608808] },
+	   { koht: 'Villamaa puhkeküla', getLatLng: [58.910531388854956, 22.387548686465333] },
+	   { koht: 'Kuuli Puhkemajad', getLatLng: [58.52977351535611, 22.228246946178395] },
+	   { koht: 'Köiguste Camping', getLatLng: [58.37025266483021, 22.98081033994774] },
+	   { koht: 'Muha Ranna caravan and camping saaremaa', getLatLng: [58.194087770705366, 22.055212297246023] },
+     ];
+	 
+
+     function Kaart() {
+       kaart = L.map('kaardikiht').setView([58.5953, 25.0136], 8);
+       L.tileLayer('https://tiles.maaamet.ee/tm/tms/1.0.0/hybriid@GMC/{z}/{x}/{y}.png&ASUTUS=TLU&ERIALA=DIGIHUMANITAARIA', {
+         attribution: "Map: <a href='http://www.maaamet.ee/'>Maa-amet</a>",
+         tms: true,
+       }).addTo(kaart);
+
+       //Lisab peidetud kämpingu kohtade markereid kaardile
+       kämpinguKohad.forEach(location => {
+         let marker = L.marker(location.getLatLng, { opacity: 0 }); // Alguses peidetud
+         marker.bindPopup(location.koht); //Annab markerile nime
+         campingMarkers.push(marker);
+       });
+
+       userMarker = L.marker([59.437, 24.7535], { draggable: true }).addTo(kaart);
+       userMarker.on('move', checkProximity, liigub); 
+     }
+	 
+
+
+     function checkProximity() {
+       let userLatLng = userMarker.getLatLng();
+
+       //Arvutab kaugust meie markeri ja iga Kämpingu koha markeri vahel
+       campingMarkers.forEach(marker => {
+         let distance = userLatLng.distanceTo(marker.getLatLng());
+         
+         // Kui kaugus on vähem kui 30 000 ühikud, siis muudab markereid nähtavaks
+         if (distance < 30000) {
+           marker.setOpacity(1).addTo(kaart); //Näita markerit
+         } else {
+           marker.setOpacity(0).remove(); //Peida markerit
+         }
+       });
+     }
+	 	    function liigub(){
+        let vastused=[]
+		for(let koht in kämpinguKohad){
+		  vastused.push([kämpinguKohad[koht].distanceTo(userMarker.getLatLng()), koht]);
+		}
+		vastused.sort((a, b) => a[0]-b[0]);
+		vastus.innerText="Lähim: "+vastused[0][1]+", "+
+		    Math.round(vastused[0][0])+"m";
+}
+   </script>
+ </head>
+ <body onload="Kaart()">
+   <div id="kaardikiht"></div>
+   <div id="vastus">Lähim kämping</div>
+ </body>
+</html>
